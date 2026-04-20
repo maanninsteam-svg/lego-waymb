@@ -392,6 +392,8 @@ function sv(string $field): string {
 
         <div class="footer-note">
             Respondemos em até 24 horas nos dias úteis.<br>
+            Em alternativa, pode contactar-nos diretamente por email:
+            <a href="mailto:support@legoworld2026.com">support@legoworld2026.com</a><br><br>
             <a href="/">&#8592; Voltar à loja</a>
         </div>
         <?php endif; ?>

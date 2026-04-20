@@ -58,6 +58,9 @@ file_put_contents($adminPath, json_encode([
         'from_name'  => getenv('RESEND_FROM_NAME')  ?: 'LEGO World Cup 2026',
         'from_email' => getenv('RESEND_FROM_EMAIL') ?: '',
     ],
+    'anthropic' => [
+        'api_key' => getenv('ANTHROPIC_API_KEY') ?: '',
+    ],
     'db' => [
         'path' => getenv('DB_PATH') ?: 'db/lego_store.db',
     ],

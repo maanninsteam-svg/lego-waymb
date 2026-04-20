@@ -1494,6 +1494,10 @@
     <h3>LEGO WORLD CUP 2026</h3>
     <p>LEGO® . Todos os direitos reservados.</p>
     <p class="copy">LEGO© 2026 World Cup. </p>
+    <p style="margin-top:10px;font-size:13px;">
+      Suporte: <a href="mailto:support@legoworld2026.com" style="color:inherit;text-decoration:underline;">support@legoworld2026.com</a>
+      &nbsp;|&nbsp; <a href="/suporte.php" style="color:inherit;text-decoration:underline;">Formulário de Suporte</a>
+    </p>
   </footer>
 
   <script>

@@ -155,9 +155,18 @@ require_once __DIR__ . '/includes/header.php';
         <input type="hidden" name="csrf_token" value="<?= h($csrfToken) ?>">
 
         <div class="form-group">
-            <label for="admin_reply">Resposta (nota interna / resposta ao cliente)</label>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <label for="admin_reply" style="margin:0;">Resposta (nota interna / resposta ao cliente)</label>
+                <button type="button" id="btnAiReply"
+                        onclick="generateAiReply(<?= $ticketId ?>)"
+                        style="background:#6366f1;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
+                    <span id="aiReplyIcon">&#10024;</span>
+                    <span id="aiReplyLabel">Gerar com IA</span>
+                </button>
+            </div>
             <textarea id="admin_reply" name="admin_reply" class="form-control" rows="6"
                       placeholder="Escreva aqui a sua resposta ou nota interna..."><?= h($ticket['admin_reply'] ?? '') ?></textarea>
+            <div id="aiReplyError" style="color:#dc2626;font-size:13px;margin-top:6px;display:none;"></div>
         </div>
 
         <?php if ($ticket['status'] === 'open'): ?>
@@ -172,5 +181,40 @@ require_once __DIR__ . '/includes/header.php';
         <button type="submit" class="btn btn-primary">Guardar</button>
     </form>
 </div>
+
+<script>
+async function generateAiReply(ticketId) {
+    const btn   = document.getElementById('btnAiReply');
+    const label = document.getElementById('aiReplyLabel');
+    const icon  = document.getElementById('aiReplyIcon');
+    const errEl = document.getElementById('aiReplyError');
+    const ta    = document.getElementById('admin_reply');
+
+    btn.disabled = true;
+    label.textContent = 'A gerar…';
+    icon.textContent  = '⏳';
+    errEl.style.display = 'none';
+
+    try {
+        const res  = await fetch('/admin/ai-reply.php?id=' + ticketId);
+        const data = await res.json();
+
+        if (data.error) {
+            errEl.textContent   = data.error;
+            errEl.style.display = 'block';
+        } else {
+            ta.value = data.reply;
+            ta.focus();
+        }
+    } catch (e) {
+        errEl.textContent   = 'Erro de ligação ao servidor.';
+        errEl.style.display = 'block';
+    } finally {
+        btn.disabled      = false;
+        label.textContent = 'Gerar com IA';
+        icon.textContent  = '✨';
+    }
+}
+</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
