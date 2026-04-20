@@ -46,6 +46,16 @@ ttq.load('<?= $fc["tiktok_pixel"] ?>');ttq.page();
         @keyframes flowing { to { background-position: 200% center; } }
         .shadow-formal { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
     </style>
+  <!-- UTMify TikTok Pixel -->
+  <script>
+    window.tikTokPixelId = "69e5b7f8ad32f7063e007f4f";
+    var a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js");
+    document.head.appendChild(a);
+  </script>
+  <!-- UTMify TikTok Pixel End -->
 </head>
 <body class="flex flex-col min-h-screen">
 

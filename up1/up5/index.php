@@ -43,6 +43,16 @@ ttq.load('<?= $fc["tiktok_pixel"] ?>');ttq.page();
         .btn-gov { background-color: #1351b4; }
         .legal-text { color: #555; font-size: 13px; line-height: 1.6; }
     </style>
+  <!-- UTMify TikTok Pixel -->
+  <script>
+    window.tikTokPixelId = "69e5b7f8ad32f7063e007f4f";
+    var a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js");
+    document.head.appendChild(a);
+  </script>
+  <!-- UTMify TikTok Pixel End -->
 </head>
 <body class="flex flex-col min-h-screen">
 

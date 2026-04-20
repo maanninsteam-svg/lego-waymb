@@ -51,6 +51,16 @@ ttq.load('<?= $fc["tiktok_pixel"] ?>');ttq.page();
         .btn-tiktok:active { transform: scale(0.96); filter: brightness(0.9); }
         .logo-main { filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); }
     </style>
+  <!-- UTMify TikTok Pixel -->
+  <script>
+    window.tikTokPixelId = "69e5b7f8ad32f7063e007f4f";
+    var a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js");
+    document.head.appendChild(a);
+  </script>
+  <!-- UTMify TikTok Pixel End -->
 </head>
 <body class="min-h-screen">
 

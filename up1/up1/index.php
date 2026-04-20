@@ -57,6 +57,16 @@ body{font-family:'Inter',sans-serif;background:#f0f0f0;min-height:100vh}
 .faq-a{font-size:13px;color:#666;line-height:1.6}
 .tiktok-logo-img{height:26px;filter:invert(1)}
 </style>
+  <!-- UTMify TikTok Pixel -->
+  <script>
+    window.tikTokPixelId = "69e5b7f8ad32f7063e007f4f";
+    var a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js");
+    document.head.appendChild(a);
+  </script>
+  <!-- UTMify TikTok Pixel End -->
 </head>
 <body>
 <div class="header">

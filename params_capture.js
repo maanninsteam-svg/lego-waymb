@@ -16,7 +16,7 @@
   var TTL_DAYS = 30;
 
   var CAPTURE_KEYS = [
-    'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
+    'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'utm_id',
     'src', 'sck',
     'ttclid', 'ttp',
     'fbclid',

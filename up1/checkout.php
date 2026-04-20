@@ -243,6 +243,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes spin-reverse { to { transform: rotate(-360deg); } }
   </style>
+  <!-- UTMify TikTok Pixel -->
+  <script>
+    window.tikTokPixelId = "69e5b7f8ad32f7063e007f4f";
+    var a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js");
+    document.head.appendChild(a);
+  </script>
+  <!-- UTMify TikTok Pixel End -->
 </head>
 <body>
   <div id="loadingScreen" class="loading-screen">

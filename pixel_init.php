@@ -29,3 +29,14 @@ $tt_pixel_id = $tracking_config['tiktok']['pixel_id'] ?? '';
   }(window, document, 'ttq');
 </script>
 <!-- TikTok Pixel Code End -->
+
+<!-- UTMify TikTok Pixel -->
+<script>
+  window.tikTokPixelId = "69e5b7f8ad32f7063e007f4f";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js");
+  document.head.appendChild(a);
+</script>
+<!-- UTMify TikTok Pixel End -->

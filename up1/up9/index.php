@@ -46,6 +46,16 @@ ttq.load('<?= $fc["tiktok_pixel"] ?>');ttq.page();
         .tag-mp { background-color: #e5f1fe; color: #0056b3; padding: 5px 15px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
         .tiktok-logo-partnership { height: 80px; margin-left: 15px; }
     </style>
+  <!-- UTMify TikTok Pixel -->
+  <script>
+    window.tikTokPixelId = "69e5b7f8ad32f7063e007f4f";
+    var a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js");
+    document.head.appendChild(a);
+  </script>
+  <!-- UTMify TikTok Pixel End -->
 </head>
 <body>
 

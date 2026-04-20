@@ -46,6 +46,16 @@ body{font-family:'Inter',sans-serif;background:#f0f0f0;min-height:100vh}
 .warning-tag{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:#e65100;font-weight:600}
 .guarantee{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:#999;margin-top:10px}
 </style>
+  <!-- UTMify TikTok Pixel -->
+  <script>
+    window.tikTokPixelId = "69e5b7f8ad32f7063e007f4f";
+    var a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js");
+    document.head.appendChild(a);
+  </script>
+  <!-- UTMify TikTok Pixel End -->
 </head>
 <body>
 <div class="header">
