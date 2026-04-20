@@ -1,6 +1,6 @@
 <?php
-ini_set('session.gc_maxlifetime', 3600);
-session_start();
+require_once __DIR__ . '/includes/auth.php';
+_start_session();
 
 // Already logged in → go to dashboard
 if (!empty($_SESSION['admin_logged_in'])) {
