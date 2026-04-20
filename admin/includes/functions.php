@@ -121,11 +121,28 @@ function sync_received_emails(PDO $pdo): array {
         if (str_contains($fromEmail, 'legoworld2026.com')) continue;
 
         $subject = $email['subject'] ?? '(sem assunto)';
-        $body    = trim($email['text'] ?? strip_tags($email['html'] ?? ''));
-        // Remover texto citado (quoted reply)
-        $body = preg_replace('/\nEm .{5,80} escreveu:.*$/si', '', $body);
-        $body = preg_replace('/\nOn .{5,80} wrote:.*$/si',    '', $body);
-        $body = trim(preg_replace('/\n[-_]{2,}.*$/s', '', $body));
+
+        // Extrair corpo — o Resend pode ter 'text', 'plain_text' ou só 'html'
+        $rawText = $email['text'] ?? $email['plain_text'] ?? null;
+        $rawHtml = $email['html'] ?? $email['body_html']  ?? null;
+
+        if ($rawText !== null && trim($rawText) !== '') {
+            $body = trim($rawText);
+        } elseif ($rawHtml !== null && trim($rawHtml) !== '') {
+            $body = trim(strip_tags((string)$rawHtml));
+        } else {
+            // Nenhum campo de corpo encontrado — logar as chaves para diagnóstico
+            error_log('[sync_received_emails] sem body para ' . $emailId . '. Chaves: ' . implode(',', array_keys($email)));
+            $body = '(sem conteúdo de texto)';
+        }
+
+        // Remover texto citado (quoted reply) — padrão alargado para datas longas
+        // "Em seg., 20 de abr. de 2026 às 00:14, LEGO World Cup 2026 <...> escreveu:"
+        $body = preg_replace('/\r?\n[-]{2,}\s*$.*$/su',                     '', $body);
+        $body = preg_replace('/\r?\nEm .{5,300} escreveu\s*:.*$/su',        '', $body);
+        $body = preg_replace('/\r?\nOn .{5,300} wrote\s*:.*$/su',           '', $body);
+        $body = preg_replace('/\r?\n_{3,}.*$/su',                           '', $body);
+        $body = trim($body);
         if ($body === '') $body = '(sem conteúdo de texto)';
 
         // Tentar extrair order_id do assunto ("Código: XXXXXXXX")

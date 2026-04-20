@@ -125,6 +125,16 @@ require_once __DIR__ . '/includes/header.php';
             <span class="label">Data</span>
             <span class="value"><?= h(format_date($ticket['created_at'])) ?></span>
         </div>
+        <?php if (!empty($ticket['email_message_id'])): ?>
+        <div class="detail-row">
+            <span class="label">ID Resend</span>
+            <span class="value">
+                <code style="font-size:11px;background:#f1f5f9;padding:2px 6px;border-radius:4px;word-break:break-all;">
+                    <?= h($ticket['email_message_id']) ?>
+                </code>
+            </span>
+        </div>
+        <?php endif; ?>
         <?php if ($ticket['resolved_at']): ?>
         <div class="detail-row">
             <span class="label">Resolvido em</span>
