@@ -21,13 +21,18 @@ RUN echo '<Directory /var/www/html>\n\
 # Copiar ficheiros do projecto
 COPY . /var/www/html/
 
+# Entrypoint script para ajustar a porta dinamicamente (Railway)
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
 # Criar directórios de dados e definir permissões
 RUN mkdir -p /var/www/html/db /var/www/html/.utmify_pending \
     && chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type d -exec chmod 755 {} \; \
     && find /var/www/html -type f -exec chmod 644 {} \; \
-    && chmod 777 /var/www/html/db /var/www/html/.utmify_pending
+    && chmod 777 /var/www/html/db /var/www/html/.utmify_pending \
+    && chmod +x /docker-entrypoint.sh
 
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+CMD ["/docker-entrypoint.sh"]
