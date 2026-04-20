@@ -23,18 +23,27 @@ if ($secret !== '' && ($_GET['secret'] ?? '') !== $secret) {
 $raw  = file_get_contents('php://input');
 $data = json_decode($raw, true);
 
-// Log para debug (pode desativar em produção)
-error_log('[email-inbound] payload: ' . substr($raw, 0, 500));
+error_log('[email-inbound] type=' . ($data['type'] ?? 'none') . ' payload=' . substr($raw, 0, 300));
 
 if (!$data) {
     http_response_code(400);
     exit('Bad payload');
 }
 
+// ── Ignorar eventos de envio do Resend (email.sent, email.delivered, etc.) ──
+// O webhook global do Resend dispara para TODOS os eventos.
+// Só queremos processar emails RECEBIDOS (inbound), nunca os enviados por nós.
+$type = $data['type'] ?? '';
+$outboundTypes = ['email.sent', 'email.delivered', 'email.delivery_delayed',
+                  'email.bounced', 'email.complained', 'email.opened', 'email.clicked'];
+if (in_array($type, $outboundTypes, true)) {
+    http_response_code(200);
+    exit('Outbound event ignored');
+}
+
 // ── Normalizar payload do Resend ──────────────────────────────
-// O Resend inbound pode enviar em dois formatos — normalizamos aqui.
-// Formato A: { from, to, subject, text, html, ... }  (raiz)
-// Formato B: { type: "email.received", data: { from, ... } }
+// Formato A: { from, to, subject, text, html, ... }  (raiz — inbound direto)
+// Formato B: { type: "email.received" / "inbound.email", data: { from, ... } }
 $email = isset($data['data']) ? $data['data'] : $data;
 
 // Extrair "from" (pode ser string "Nome <email>" ou objeto)
@@ -51,6 +60,12 @@ if (is_array($fromRaw)) {
         $fromName  = '';
         $fromEmail = strtolower(trim($fromRaw));
     }
+}
+
+// Ignorar emails enviados por nós mesmos (loop prevention)
+if (str_contains(strtolower($fromEmail), 'legoworld2026.com')) {
+    http_response_code(200);
+    exit('Self-loop ignored');
 }
 
 $subject = $email['subject'] ?? '(sem assunto)';
