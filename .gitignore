@@ -1,19 +1,26 @@
-# Base de dados (volume persistente na Railway)
+# ── Credenciais e configurações sensíveis ─────────────────────
+# Estes ficheiros são gerados automaticamente pelo generate-configs.php
+# a partir das variáveis de ambiente da Railway. NUNCA commitar.
+waymb-config.json
+up1/waymb-config.json
+tracking_config.json
+admin-config.json
+.env
+
+# ── Base de dados (volume persistente na Railway) ─────────────
 db/lego_store.db
 
-# Pedidos pendentes (efémeros)
+# ── Pedidos pendentes (efémeros) ──────────────────────────────
 .utmify_pending/
 
-# Ficheiros de sistema
+# ── Sistema operativo ─────────────────────────────────────────
 .DS_Store
 Thumbs.db
 *.log
 
-# Backups e temporários
+# ── Temporários ───────────────────────────────────────────────
 *.bak
 *.tmp
 *.swp
-
-# Zip desnecessário
 pre/captcha-generator-main.zip
 loja_files copy/

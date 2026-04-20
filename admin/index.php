@@ -27,9 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $inputUser = trim($_POST['username'] ?? '');
         $inputPass = $_POST['password'] ?? '';
 
-        $storedUser = $config['admin']['username'] ?? '';
-        $storedHash = $config['admin']['password_hash'] ?? '';
-        $storedPlain = $config['admin']['password'] ?? '';
+        $storedUser  = $config['admin']['username']      ?? '';
+        $storedHash  = $config['admin']['password_hash'] ?? '';
+        // Plaintext vem da variável de ambiente (Railway) — nunca do ficheiro
+        $storedPlain = getenv('ADMIN_PASSWORD') ?: ($config['admin']['password'] ?? '');
 
         $userOk = ($inputUser === $storedUser);
         $passOk = false;
