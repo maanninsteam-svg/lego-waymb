@@ -40,7 +40,22 @@ if ($apiKey === '') {
 
 $systemPrompt = 'És um agente de suporte ao cliente da loja online LEGO World Cup 2026, que vende produtos LEGO temáticos do Campeonato do Mundo FIFA 2026. Responde sempre em Português de Portugal (PT-PT), de forma profissional, empática e cordial. As respostas devem ser concisas (2 a 4 parágrafos), resolver a dúvida ou problema do cliente e terminar com uma saudação cordial assinada como "Equipa de Suporte LEGO World Cup 2026". Não uses markdown, apenas texto simples.';
 
-$userContent = "Assunto: " . $ticket['subject'] . "\n\nMensagem do cliente (" . $ticket['name'] . "):\n" . $ticket['message'];
+// Construir contexto completo: se veio de email, incluir o email original citado
+$source = $ticket['source'] ?? 'form';
+if ($source === 'email' && !empty($ticket['email_context'])) {
+    // Extrair texto simples do HTML do email original (contexto do rastreio)
+    $originalText = strip_tags($ticket['email_context']);
+    $originalText = preg_replace('/\s{3,}/', "\n", $originalText);
+    $originalText = trim(substr($originalText, 0, 800)); // limite razoável
+
+    $userContent  = "Assunto: " . $ticket['subject'] . "\n\n";
+    $userContent .= "=== EMAIL ORIGINAL (enviado pela nossa loja ao cliente) ===\n";
+    $userContent .= $originalText . "\n";
+    $userContent .= "=== RESPOSTA DO CLIENTE (" . $ticket['name'] . ") ===\n";
+    $userContent .= $ticket['message'];
+} else {
+    $userContent = "Assunto: " . $ticket['subject'] . "\n\nMensagem do cliente (" . $ticket['name'] . "):\n" . $ticket['message'];
+}
 
 $payload = json_encode([
     'model'      => 'claude-haiku-4-5-20251001',

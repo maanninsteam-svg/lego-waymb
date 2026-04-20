@@ -61,6 +61,9 @@ file_put_contents($adminPath, json_encode([
     'anthropic' => [
         'api_key' => getenv('ANTHROPIC_API_KEY') ?: '',
     ],
+    'webhook' => [
+        'secret' => getenv('WEBHOOK_SECRET') ?: '',
+    ],
     'db' => [
         'path' => getenv('DB_PATH') ?: 'db/lego_store.db',
     ],

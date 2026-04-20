@@ -78,7 +78,10 @@ require_once __DIR__ . '/includes/header.php';
             <a href="/admin/tickets.php" style="color:#64748b;text-decoration:none;">&#8592; Voltar aos Tickets</a>
         </p>
     </div>
-    <div>
+    <div style="display:flex;align-items:center;gap:10px;">
+        <?php if (($ticket['source'] ?? 'form') === 'email'): ?>
+            <span style="background:#ede9fe;color:#5b21b6;padding:5px 12px;border-radius:12px;font-size:12px;font-weight:600;">&#9993; Via Email</span>
+        <?php endif; ?>
         <?php if ($ticket['status'] === 'open'): ?>
             <span style="background:#fef3c7;color:#92400e;padding:5px 14px;border-radius:12px;font-size:13px;font-weight:600;">Aberto</span>
         <?php else: ?>

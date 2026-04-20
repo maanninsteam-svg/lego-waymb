@@ -62,4 +62,14 @@ function run_migrations(PDO $pdo): void {
         CREATE INDEX IF NOT EXISTS idx_tickets_status ON support_tickets(status);
         CREATE INDEX IF NOT EXISTS idx_tickets_email  ON support_tickets(email);
     ");
+
+    // Colunas adicionadas em migrações posteriores (falha silenciosa se já existirem)
+    $extras = [
+        "ALTER TABLE support_tickets ADD COLUMN source           TEXT    DEFAULT 'form'",
+        "ALTER TABLE support_tickets ADD COLUMN email_message_id TEXT",
+        "ALTER TABLE support_tickets ADD COLUMN email_context    TEXT",
+    ];
+    foreach ($extras as $sql) {
+        try { $pdo->exec($sql); } catch (Throwable $e) { /* coluna já existe */ }
+    }
 }
