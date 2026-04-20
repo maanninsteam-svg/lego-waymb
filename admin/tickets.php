@@ -38,6 +38,18 @@ $tickets = $stmt->fetchAll();
 
 $openCount = (int)$pdo->query("SELECT COUNT(*) FROM support_tickets WHERE status='open'")->fetchColumn();
 
+// Auto-sincronizar emails recebidos (throttled a 60s dentro da função)
+$syncResult = sync_received_emails($pdo);
+// Se criou novos tickets, recarregar contagens
+if (!empty($syncResult['synced']) && $syncResult['synced'] > 0) {
+    $countStmt->execute($params);
+    $totalRows  = (int)$countStmt->fetchColumn();
+    $totalPages = max(1, (int)ceil($totalRows / $perPage));
+    $stmt->execute();
+    $tickets   = $stmt->fetchAll();
+    $openCount = (int)$pdo->query("SELECT COUNT(*) FROM support_tickets WHERE status='open'")->fetchColumn();
+}
+
 $pageTitle = 'Suporte';
 
 function buildTicketQuery(array $override = []): string {
@@ -56,7 +68,19 @@ require_once __DIR__ . '/includes/header.php';
 <div class="page-header">
     <div>
         <h2>Suporte — Tickets <?php if ($openCount > 0): ?><span style="background:#dc2626;color:#fff;font-size:14px;border-radius:999px;padding:2px 10px;margin-left:8px;"><?= $openCount ?></span><?php endif; ?></h2>
-        <p>Mensagens recebidas pelo formulário de suporte</p>
+        <p>Mensagens recebidas pelo formulário e por email</p>
+    </div>
+    <div>
+        <button id="btnSyncEmails" onclick="syncEmails()"
+                style="background:#6366f1;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
+            <span id="syncIcon">&#8635;</span>
+            <span id="syncLabel">Sincronizar Emails</span>
+        </button>
+        <?php if (!empty($syncResult['synced']) && $syncResult['synced'] > 0): ?>
+            <p style="font-size:12px;color:#059669;margin-top:4px;text-align:right;">
+                &#10003; <?= $syncResult['synced'] ?> novo<?= $syncResult['synced'] > 1 ? 's' : '' ?> email<?= $syncResult['synced'] > 1 ? 's' : '' ?> importado<?= $syncResult['synced'] > 1 ? 's' : '' ?>
+            </p>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -158,5 +182,37 @@ require_once __DIR__ . '/includes/header.php';
     </span>
 </div>
 <?php endif; ?>
+
+<script>
+async function syncEmails() {
+    const btn   = document.getElementById('btnSyncEmails');
+    const icon  = document.getElementById('syncIcon');
+    const label = document.getElementById('syncLabel');
+    btn.disabled = true;
+    icon.textContent  = '⏳';
+    label.textContent = 'A sincronizar…';
+
+    try {
+        const res  = await fetch('/admin/sync-emails.php');
+        const data = await res.json();
+        if (data.synced > 0) {
+            // Há novos emails — recarregar a página para mostrar os tickets
+            window.location.reload();
+        } else {
+            icon.textContent  = '✓';
+            label.textContent = 'Sem novos emails';
+            setTimeout(() => {
+                icon.textContent  = '↻';
+                label.textContent = 'Sincronizar Emails';
+                btn.disabled = false;
+            }, 2500);
+        }
+    } catch(e) {
+        icon.textContent  = '✕';
+        label.textContent = 'Erro — tente novamente';
+        btn.disabled = false;
+    }
+}
+</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

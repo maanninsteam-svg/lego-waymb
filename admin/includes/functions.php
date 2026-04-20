@@ -43,6 +43,120 @@ function method_label(string $method): string {
     return $map[strtolower($method)] ?? strtoupper($method);
 }
 
+/**
+ * Vai buscar emails recebidos ao Resend e cria tickets para os novos.
+ * Retorna o número de tickets criados.
+ */
+function sync_received_emails(PDO $pdo): array {
+    $config = json_decode(file_get_contents(__DIR__ . '/../../admin-config.json'), true);
+    $apiKey = $config['resend']['api_key'] ?? '';
+    if (!$apiKey) return ['synced' => 0, 'error' => 'API key não configurada'];
+
+    // Throttle: só sincroniza se passaram mais de 60 segundos
+    $flagFile = '/var/www/html/db/.last_email_sync';
+    if (file_exists($flagFile) && (time() - (int)file_get_contents($flagFile)) < 60) {
+        return ['synced' => 0, 'error' => null, 'skipped' => true];
+    }
+
+    // Buscar lista de emails recebidos
+    $ch = curl_init('https://api.resend.com/emails/receiving');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER     => ['Authorization: Bearer ' . $apiKey],
+        CURLOPT_TIMEOUT        => 15,
+    ]);
+    $response = curl_exec($ch);
+    $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    file_put_contents($flagFile, time()); // atualizar throttle mesmo em erro
+
+    if ($httpCode !== 200) {
+        error_log('[sync_received_emails] API list error: HTTP ' . $httpCode . ' ' . $response);
+        return ['synced' => 0, 'error' => 'Resend API devolveu HTTP ' . $httpCode];
+    }
+
+    $list   = json_decode($response, true);
+    $emails = $list['data'] ?? [];
+    $synced = 0;
+
+    foreach ($emails as $meta) {
+        $emailId = $meta['id'] ?? '';
+        if (!$emailId) continue;
+
+        // Já processado?
+        $dup = $pdo->prepare("SELECT id FROM support_tickets WHERE email_message_id = :mid");
+        $dup->execute([':mid' => $emailId]);
+        if ($dup->fetch()) continue;
+
+        // Buscar email completo (com corpo)
+        $ch2 = curl_init('https://api.resend.com/emails/receiving/' . $emailId);
+        curl_setopt_array($ch2, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER     => ['Authorization: Bearer ' . $apiKey],
+            CURLOPT_TIMEOUT        => 15,
+        ]);
+        $full     = curl_exec($ch2);
+        $httpCode2 = (int)curl_getinfo($ch2, CURLINFO_HTTP_CODE);
+        curl_close($ch2);
+
+        if ($httpCode2 !== 200) continue;
+
+        $email = json_decode($full, true);
+
+        // Normalizar "from"
+        $fromRaw = $email['from'] ?? '';
+        if (is_array($fromRaw)) {
+            $fromName  = $fromRaw['name']  ?? '';
+            $fromEmail = strtolower($fromRaw['email'] ?? '');
+        } elseif (preg_match('/^(.*?)\s*<([^>]+)>$/', trim($fromRaw), $m)) {
+            $fromName  = trim($m[1], ' "\'');
+            $fromEmail = strtolower(trim($m[2]));
+        } else {
+            $fromName  = '';
+            $fromEmail = strtolower(trim($fromRaw));
+        }
+
+        // Ignorar emails enviados por nós mesmos
+        if (str_contains($fromEmail, 'legoworld2026.com')) continue;
+
+        $subject = $email['subject'] ?? '(sem assunto)';
+        $body    = trim($email['text'] ?? strip_tags($email['html'] ?? ''));
+        // Remover texto citado (quoted reply)
+        $body = preg_replace('/\nEm .{5,80} escreveu:.*$/si', '', $body);
+        $body = preg_replace('/\nOn .{5,80} wrote:.*$/si',    '', $body);
+        $body = trim(preg_replace('/\n[-_]{2,}.*$/s', '', $body));
+        if ($body === '') $body = '(sem conteúdo de texto)';
+
+        // Tentar extrair order_id do assunto ("Código: XXXXXXXX")
+        $orderId = null;
+        if (preg_match('/[Cc][oó]digo[:\s]+([A-Z0-9\-]{6,30})/u', $subject, $m)) {
+            $orderId = $m[1];
+        }
+
+        $emailContext = $email['html'] ?? $email['text'] ?? '';
+
+        $stmt = $pdo->prepare("
+            INSERT INTO support_tickets
+                (order_id, name, email, subject, message, status, source, email_message_id, email_context, created_at)
+            VALUES
+                (:order_id, :name, :email, :subject, :message, 'open', 'email', :msg_id, :context, datetime('now'))
+        ");
+        $stmt->execute([
+            ':order_id' => $orderId,
+            ':name'     => $fromName ?: $fromEmail,
+            ':email'    => $fromEmail,
+            ':subject'  => $subject,
+            ':message'  => $body,
+            ':msg_id'   => $emailId,
+            ':context'  => $emailContext,
+        ]);
+        $synced++;
+    }
+
+    return ['synced' => $synced, 'error' => null];
+}
+
 function send_tracking_email(
     string $toEmail,
     string $toName,
