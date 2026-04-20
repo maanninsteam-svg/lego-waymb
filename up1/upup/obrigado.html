@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento Confirmado</title>
+    
+    <script src="js/utm-handler.js" data-token="8976387c-1a08-4082-ba83-a82bbc4f806b" data-click-id-param="click_id"></script>
+    <script src="js/latest.js" data-utmify-prevent-subids="" async="" defer=""></script>
+  
+    <script>
+        window.pixelId = "674d1f78381b0abc4590b9c3";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <style>
+        /* Fundo estilo TikTok Shop */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Roboto", sans-serif;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(255,0,128,0.18) 0%, rgba(0,0,0,0) 60%),
+                radial-gradient(circle at 80% 80%, rgba(0,255,255,0.18) 0%, rgba(0,0,0,0) 60%),
+                #000000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 420px;
+            width: 100%;
+            background: rgba(20,20,20,0.8);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            padding: 40px 24px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.9);
+            text-align: center;
+        }
+
+        .logo {
+            filter: drop-shadow(0 0 6px rgba(255,255,255,0.4));
+            margin-bottom: 30px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #00f5ff 0%, #ff0050 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 30px rgba(255,0,80,0.4), 0 12px 30px rgba(0,245,255,0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 12px 30px rgba(255,0,80,0.4), 0 12px 30px rgba(0,245,255,0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 16px 40px rgba(255,0,80,0.6), 0 16px 40px rgba(0,245,255,0.5);
+            }
+        }
+
+        .checkmark {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #fff;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .checkmark:after {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 3px;
+            width: 10px;
+            height: 18px;
+            border: solid #fff;
+            border-width: 0 4px 4px 0;
+            transform: rotate(45deg);
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.6), 0 0 20px rgba(255,0,128,0.6);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .info-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .info-box p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #ddd;
+            margin: 0;
+        }
+
+        .info-box strong {
+            color: #00f5ff;
+            font-size: 15px;
+        }
+
+        .details-box {
+            background: #111;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .detail-value {
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #888;
+            font-size: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="width: 100%; text-align: center; margin: auto;">
+            <img src="images/tiktok.png" alt="TikTok Shop" class="logo" style="width: 100%; max-width: 200px;">
+        </div>
+
+        <div class="success-icon">
+            <div class="checkmark"></div>
+        </div>
+
+        <h1>Seu pagamento foi processado!</h1>
+        
+        <p class="subtitle">Parabéns pela compra!</p>
+
+        <div class="info-box">
+            <p>
+                <strong>O código de rastreio será disponibilizado via email em até 24 horas</strong>
+            </p>
+        </div>
+
+        <div class="details-box" id="orderDetails" style="display: none;">
+            <div class="detail-item">
+                <span class="detail-label">Código do Pedido</span>
+                <span class="detail-value" id="orderCode">-</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Valor Pago</span>
+                <span class="detail-value">R$ 05,00</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Método</span>
+                <span class="detail-value">PIX</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Data</span>
+                <span class="detail-value" id="paymentDate">-</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            Em caso de dúvidas, entre em contato conosco.<br>
+            Obrigado por sua preferência!
+        </div>
+    </div>
+
+    <script>
+        // Obtém dados do pagamento do localStorage
+        const paymentCode = localStorage.getItem('mangofy_payment_code');
+        const externalCode = localStorage.getItem('mangofy_external_code');
+        
+        if (paymentCode) {
+            document.getElementById('orderDetails').style.display = 'block';
+            document.getElementById('orderCode').textContent = externalCode || paymentCode;
+            
+            // Formata data atual
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('pt-BR') + ' às ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('paymentDate').textContent = dateStr;
+        }
+
+        // Limpa dados do localStorage após 5 segundos (opcional)
+        setTimeout(() => {
+            // Mantém os dados por segurança, mas você pode descomentar para limpar
+            // localStorage.removeItem('mangofy_payment_code');
+            // localStorage.removeItem('mangofy_payment_status');
+            // localStorage.removeItem('mangofy_external_code');
+        }, 5000);
+    </script>
+</body>
+</html>
+

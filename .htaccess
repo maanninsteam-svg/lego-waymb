@@ -1,0 +1,24 @@
+Options -Indexes
+
+# Proteger ficheiros de configuração sensíveis
+<FilesMatch "^(admin-config|waymb-config|tracking-config|central_config|tracking_config)\.json$">
+    Require all denied
+</FilesMatch>
+
+# Proteger base de dados SQLite
+<FilesMatch "\.db$">
+    Require all denied
+</FilesMatch>
+
+# Proteger ficheiros .json de pedidos pendentes
+<FilesMatch "\.json$">
+    Require all denied
+</FilesMatch>
+
+# Permitir acesso aos JSON de configuração apenas via PHP (não via HTTP directo)
+# As regras acima bloqueiam acesso directo; PHP pode ler do sistema de ficheiros normalmente.
+
+# Forçar HTTPS (Railway fornece HTTPS automaticamente)
+RewriteEngine On
+RewriteCond %{HTTP:X-Forwarded-Proto} =http
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

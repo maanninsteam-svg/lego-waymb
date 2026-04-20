@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <script src="https://cdn.jsdelivr.net/gh/xTracky/static@latest/utm-handler.js"
+        data-token="53422474-f298-4edb-9a70-4565ce4e3c73">
+        </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liberação de Acesso - WhatsSpy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="css/all.min.css" rel="stylesheet">
+    <script src="js/qrcode.min.js"></script>
+    <link rel="stylesheet" href="css/css.css">
+    <link rel="stylesheet" href="css/form-styles.css">
+    <script src="js/utm-handler.js" data-token="6d2e88a4-0f12-48a0-b9c4-3e8b106feeb0" data-click-id-param="click_id">
+    </script>
+</head>
+
+<body>
+
+    <div style="display: none;">
+        <script id="_waufkp">
+            var _wau = _wau || [];
+            _wau.push(["small", "cnbsqnxza2", "9qr"]);
+        </script>
+        <script async src="//waust.at/s.js"></script>
+    </div>
+
+    <header>
+        <div class="logo-text">
+            <i class="fab fa-whatsapp"></i> WhatsSpy
+        </div>
+        <div class="header-subtitle">Ambiente Seguro de Pagamento</div>
+    </header>
+
+    <div class="container">
+        <div class="payment-container">
+
+            <!-- Step 1: Input Name -->
+            <div id="step-name" class="step-container">
+                <div class="card-header">
+                    <div class="section-title">
+                        <i class="fas fa-user-lock"></i> Identificação Segura
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="instruction-text">Para gerar sua licença exclusiva, confirme seu nome completo abaixo:</p>
+
+                    <div class="form-group">
+                        <label for="customer-name" class="input-label">Nome Completo</label>
+                        <div class="input-group">
+                            <input type="text" id="customer-name" placeholder="Digite seu nome aqui..." required>
+                        </div>
+                    </div>
+
+                    <button id="generate-btn" class="action-btn">
+                        <span>Gerar Licença Agora</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+
+                    <div class="secure-notice">
+                        <i class="fas fa-lock"></i> Seus dados estão protegidos
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="loading-spy-container" style="display: none;">
+                <div class="spinner-wrapper">
+                    <div class="spinner-modern"></div>
+                    <div class="spinner-inner"></div>
+                </div>
+
+                <div class="progress-box">
+                    <div class="progress-label-row">
+                        <span class="progress-label" id="progressText">Iniciando conexão...</span>
+                        <span class="progress-percentage" id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill-modern" id="progressFill"></div>
+                    </div>
+                </div>
+
+                <div class="terminal" id="logContainer">
+                    <!-- Logs will appear here -->
+                </div>
+            </div>
+
+            <!-- Payment Content -->
+            <div id="payment-content" style="display: none;">
+                <div class="card-header">
+                    <div class="section-title">
+                        Pagamento via PIX
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="qrcode-container">
+                        <div class="security-badge">
+                            <i class="fas fa-shield-alt"></i> Liberação Imediata
+                        </div>
+                        <div id="qrcode"></div>
+                        <!-- Fallback com QuickChart -->
+                        <img id="qrcode-img" style="display: none;" alt="QR Code PIX">
+                    </div>
+
+                    <div class="copy-section">
+                        <span class="input-label">Copie e cole o código abaixo no seu app bancário:</span>
+                        <div class="input-group">
+                            <input type="text" id="pix-code" readonly>
+                            <button class="copy-btn" id="copy-btn">
+                                <i class="far fa-copy"></i>
+                                <span>Copiar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="payment-info">
+                        <div class="info-item">
+                            <span class="info-label">
+                                <i class="fas fa-box"></i> Produto
+                            </span>
+                            <span class="info-value">Licença WhatsSpy</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">
+                                <i class="fas fa-money-bill-wave"></i> Valor Total
+                            </span>
+                            <span class="info-value amount" id="amount">R$ 0,00</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">
+                                <i class="far fa-clock"></i> Válido até
+                            </span>
+                            <span class="info-value" id="expiration">--/--/---- --:--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="error-message" class="error-message" style="display: none;"></div>
+        </div>
+
+        <div class="trust-badges">
+            <div class="trust-badge">
+                <i class="fas fa-lock"></i>
+                <span>100% Anônimo</span>
+            </div>
+            <div class="trust-badge">
+                <i class="fas fa-check-circle"></i>
+                <span>Site Oficial</span>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // ==========================================
+        // CONFIGURAÇÕES DO CHECKOUT
+        // ==========================================
+        const CHECKOUT_CONFIG = {
+            redirectUrl: 'https://zap-espiao.com/painel/', // Para onde vai após pagar
+            amountInCents: 2790, // Valor em centavos (Ex: 3790 = R$ 37,90)
+            pollIntervalMs: 5000, // Tempo entre verificações de status
+            maxRetries: 3,
+            retryDelay: 2000
+        };
+
+        // Variáveis de Estado
+        let transactionId = null;
+        let checkPaymentInterval = null;
+        let retryCount = 0;
+        let loadingInterval = null;
+
+        // Função para extrair parâmetros UTM da URL
+        function getUtmParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const utmParams = {};
+
+            const utmFields = [
+                'utm_source', 'utm_medium', 'utm_campaign',
+                'utm_term', 'utm_content', 'click_id',
+                'fbclid', 'gclid', 'msclkid', 'ttclid'
+            ];
+
+            utmFields.forEach(param => {
+                if (urlParams.has(param)) {
+                    utmParams[param] = urlParams.get(param);
+                }
+            });
+
+            return utmParams;
+        }
+
+        // Função para gerar CPF válido
+        function gerarCPF() {
+            let cpf = '';
+            for (let i = 0; i < 9; i++) {
+                cpf += Math.floor(Math.random() * 10);
+            }
+
+            // Cálculo do primeiro dígito verificador
+            let soma = 0;
+            for (let i = 0; i < 9; i++) {
+                soma += parseInt(cpf.charAt(i)) * (10 - i);
+            }
+            let resto = 11 - (soma % 11);
+            let dv1 = resto > 9 ? 0 : resto;
+            cpf += dv1;
+
+            // Cálculo do segundo dígito verificador
+            soma = 0;
+            for (let i = 0; i < 10; i++) {
+                soma += parseInt(cpf.charAt(i)) * (11 - i);
+            }
+            resto = 11 - (soma % 11);
+            let dv2 = resto > 9 ? 0 : resto;
+            cpf += dv2;
+
+            return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        }
+
+        // Função para gerar nome fictício
+        function gerarNome() {
+            const nomes = ['Joao', 'Maria', 'Pedro', 'Ana', 'Carlos', 'Mariana', 'Lucas', 'Juliana', 'Fernando', 'Patricia'];
+            const sobrenomes = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Ferreira', 'Alves', 'Pereira', 'Gomes', 'Martins'];
+
+            const nome = nomes[Math.floor(Math.random() * nomes.length)];
+            const sobrenome1 = sobrenomes[Math.floor(Math.random() * sobrenomes.length)];
+            const sobrenome2 = sobrenomes[Math.floor(Math.random() * sobrenomes.length)];
+
+            return `${nome} ${sobrenome1} ${sobrenome2}`;
+        }
+
+        // Função para gerar e-mail válido
+        function gerarEmail(nome) {
+            const provedores = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com.br', 'icloud.com'];
+            const nomeFormatado = nome.toLowerCase().replace(/\s+/g, '.');
+            const provedor = provedores[Math.floor(Math.random() * provedores.length)];
+            return `${nomeFormatado}@${provedor}`;
+        }
+
+        // Função para gerar telefone válido
+        function gerarTelefone() {
+            const ddd = ['11', '21', '31', '41', '51', '61', '71', '81', '91'];
+            const num = Math.floor(10000000 + Math.random() * 90000000);
+            return `${ddd[Math.floor(Math.random() * ddd.length)]}9${num.toString().substring(1)}`;
+        }
+
+        // Função para verificar o status do pagamento
+        function verificarPagamento(idTransacao) {
+            // Função para extrair parâmetros UTM da URL
+            function getUtmParams() {
+                const params = new URLSearchParams(window.location.search);
+                const utmParams = {};
+
+                // Lista de parâmetros UTM que queremos capturar
+                const utmKeys = [
+                    'utm_source',
+                    'utm_medium',
+                    'utm_campaign',
+                    'utm_term',
+                    'utm_content'
+                ];
+
+                // Captura cada parâmetro UTM presente na URL
+                utmKeys.forEach(key => {
+                    if (params.has(key)) {
+                        utmParams[key] = params.get(key);
+                    }
+                });
+
+                return Object.keys(utmParams).length > 0 ? utmParams : null;
+            }
+
+            // Obtém os parâmetros UTM da URL atual
+            const utmQuery = getUtmParams();
+
+            // Prepara os dados para envio
+            const requestData = {
+                id: idTransacao,
+                ...(utmQuery && { utmQuery }) // Inclui UTM apenas se existir
+            };
+
+            return fetch('verifyPayment.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(`HTTP ${response.status}: ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    console.error('Erro ao verificar pagamento:', error);
+                    throw error;
+                });
+        }
+
+        // Função para iniciar a verificação periódica
+        function iniciarVerificacaoPagamento(idTransacao) {
+            checkPaymentInterval = setInterval(() => {
+                verificarPagamento(idTransacao)
+                    .then(data => {
+                        console.log('Resposta completa:', data); // Log completo para debug
+
+                        // Verifica o status em múltiplos locais possíveis
+                        let paymentStatus = null;
+
+                        // Tenta extrair o status de diferentes estruturas
+                        if (data.raw && data.raw.data && data.raw.data.payment_status) {
+                            paymentStatus = data.raw.data.payment_status;
+                        } else if (data.data && data.data.payment_status) {
+                            paymentStatus = data.data.payment_status;
+                        } else if (data.payment_status) {
+                            paymentStatus = data.payment_status;
+                        } else if (data.status) {
+                            paymentStatus = data.status;
+                        }
+
+                        console.log('Status do pagamento:', paymentStatus); // Para debug
+
+                        // Verifica se o pagamento foi aprovado
+                        if (paymentStatus && (
+                            paymentStatus.toLowerCase() === 'approved' ||
+                            paymentStatus.toLowerCase() === 'completed' ||
+                            paymentStatus.toLowerCase() === 'paid')) {
+
+                            clearInterval(checkPaymentInterval);
+                            console.log('Pagamento aprovado! Redirecionando...');
+
+                            // Redireciona para o destino configurado
+                            window.location.href = CHECKOUT_CONFIG.redirectUrl;
+                        }
+                    })
+                    .catch(error => console.error('Erro na verificação:', error));
+            }, CHECKOUT_CONFIG.pollIntervalMs);
+        }
+
+        // Função para exibir mensagens de erro
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            const errorElement = document.getElementById('error-message');
+            errorElement.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            errorElement.style.display = 'block';
+        }
+
+        // Função para gerar os dados do PIX
+        function generatePixData() {
+            const nome = gerarNome();
+            const cpf = gerarCPF();
+            const telefone = gerarTelefone();
+            const email = gerarEmail(nome);
+
+            return {
+                name: nome,
+                email: email,
+                cpf: cpf.replace(/\D/g, ''),
+                phone: telefone,
+                amount: 1672,
+                item_title: "Pagamento de Serviço",
+                utmQuery: JSON.stringify(getUtmParams()),
+            };
+        }
+
+        // ==========================================
+        // LÓGICA DE LOADING VISUAL (SPY)
+        // ==========================================
+        function startLoadingAnimation() {
+            const logContainer = document.getElementById('logContainer');
+            const progressFill = document.getElementById('progressFill');
+            const progressPercent = document.getElementById('progressPercent');
+            const progressText = document.getElementById('progressText');
+
+            logContainer.innerHTML = '';
+            progressFill.style.width = '0%';
+            progressPercent.textContent = '0%';
+
+            // Logs para o terminal
+            const logMessages = [
+                { text: 'Iniciando conexão segura...', delay: 500, icon: '>' },
+                { text: 'Autenticando pagamento...', delay: 1500, icon: '>' },
+                { text: 'Validando chaves de segurança...', delay: 2800, icon: '>' },
+                { text: 'Conexão estabelecida com sucesso.', delay: 4000, class: 'success', icon: '✓' },
+                { text: 'Gerando PIX exclusivo...', delay: 5500, icon: '>' },
+                { text: 'Finalizando solicitação...', delay: 7000, icon: '>' }
+            ];
+
+            // Adiciona logs
+            logMessages.forEach(msg => {
+                setTimeout(() => {
+                    const logEntry = document.createElement('div');
+                    logEntry.className = 'log-entry';
+                    if (msg.class) logEntry.classList.add(msg.class);
+                    logEntry.innerHTML = `<span class="log-icon">${msg.icon}</span><span class="log-text">${msg.text}</span>`;
+                    logContainer.appendChild(logEntry);
+                    logContainer.scrollTop = logContainer.scrollHeight;
+
+                    // Trigger animation
+                    setTimeout(() => logEntry.classList.add('visible'), 50);
+                }, msg.delay);
+            });
+
+            // Barra de progresso
+            let progress = 0;
+            loadingInterval = setInterval(() => {
+                // Avança rápido até 90%, espera a resposta real pra ir até 100%
+                if (progress < 90) {
+                    progress += Math.random() * 2;
+                    if (progress > 90) progress = 90;
+
+                    progressFill.style.width = `${progress}%`;
+                    progressPercent.textContent = `${Math.floor(progress)}%`;
+
+                    if (progress < 30) progressText.textContent = "Conectando...";
+                    else if (progress < 60) progressText.textContent = "Validando dados...";
+                    else progressText.textContent = "Gerando cobrança...";
+                }
+            }, 100);
+        }
+
+        // Função para processar o PIX quando gerado com sucesso
+        function handlePixSuccess(data) {
+            console.log('Dados recebidos do servidor:', data);
+
+            // Completa o loading
+            clearInterval(loadingInterval);
+            const progressFill = document.getElementById('progressFill');
+            const progressPercent = document.getElementById('progressPercent');
+            progressFill.style.width = '100%';
+            progressPercent.textContent = '100%';
+
+            // Pequeno delay para usuário ver o 100%
+            setTimeout(() => {
+                transactionId = data.data.transactionId || data.id || data.data.hash || data.data.external_code || data.data.payment_code;
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('payment-content').style.display = 'block';
+
+                // Formata o valor
+                const amount = (data.amount / 100).toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                });
+                document.getElementById('amount').textContent = amount;
+
+                // Formata a data de expiração
+                const expirationDate = new Date(Date.now() + 5 * 60000); // 5 minutos a partir de agora
+                const formattedDate = expirationDate.toLocaleString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                document.getElementById('expiration').textContent = formattedDate;
+
+                // Preenche o código PIX
+                document.getElementById('pix-code').value = data.data.pix.pix_qr_code;
+
+                // Gera o QRCode
+                if (data.data.pix.pix_qr_code && data.data.pix.pix_qr_code.startsWith('data:image')) {
+                    const qrcodeImg = document.getElementById('qrcode-img');
+                    qrcodeImg.src = data.data.pix.pix_qr_code;
+                    qrcodeImg.style.display = 'block';
+                    document.getElementById('qrcode').style.display = 'none';
+                } else {
+                    QRCode.toCanvas(document.getElementById('qrcode'), data.data.pix.pix_qr_code, {
+                        width: 200,
+                        margin: 2,
+                        color: {
+                            dark: '#000000',
+                            light: '#ffffff'
+                        }
+                    }, function (error) {
+                        if (error) {
+                            console.error('Erro ao gerar QRCode:', error);
+                            const qrcodeImg = document.getElementById('qrcode-img');
+                            qrcodeImg.src = `https://quickchart.io/qr?text=${encodeURIComponent(data.data.pix.pix_qr_code)}&size=200`;
+                            qrcodeImg.style.display = 'block';
+                            document.getElementById('qrcode').style.display = 'none';
+                        }
+                    });
+                }
+
+                // Configura o botão de copiar
+                document.getElementById('copy-btn').addEventListener('click', function () {
+                    const pixCode = document.getElementById('pix-code');
+                    pixCode.select();
+                    pixCode.setSelectionRange(0, 99999);
+                    document.execCommand('copy');
+
+                    const copyBtn = document.getElementById('copy-btn');
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> <span>Copiado!</span>';
+                    copyBtn.classList.add('copied');
+
+                    setTimeout(function () {
+                        copyBtn.innerHTML = '<i class="far fa-copy"></i> <span>Copiar</span>';
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
+                });
+
+                if (transactionId) {
+                    console.log('Iniciando verificação com ID:', transactionId);
+                    iniciarVerificacaoPagamento(transactionId);
+                }
+            }, 800); // 800ms delay
+        }
+
+        // Função para tentar gerar o PIX com retentativas
+        function tryGeneratePix(customerName) {
+            const paymentData = {
+                amount: CHECKOUT_CONFIG.amountInCents,
+                customerName: customerName, // Passa o nome digitado
+                utmQuery: JSON.stringify(getUtmParams()),
+            }
+
+            fetch('pagamento.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(paymentData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Sucesso - processa o PIX
+                        handlePixSuccess(data);
+                    } else {
+                        // Outros erros ou esgotou as tentativas
+                        showError(data.error || 'Erro ao gerar o PIX. Gerando novamente...');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao gerar PIX:', error);
+                    showError('Erro ao conectar com o servidor. Tentando novamente...');
+                });
+        }
+
+        // Quando o DOM estiver carregado
+        document.addEventListener('DOMContentLoaded', function () {
+            const nameInput = document.getElementById('customer-name');
+            const generateBtn = document.getElementById('generate-btn');
+            const stepName = document.getElementById('step-name');
+            const loading = document.getElementById('loading');
+
+            generateBtn.addEventListener('click', function () {
+                const name = nameInput.value.trim();
+
+                if (name.length < 3) {
+                    alert('Por favor, digite seu nome completo.');
+                    nameInput.focus();
+                    return;
+                }
+
+                // UI Transition
+                stepName.style.display = 'none';
+                loading.style.display = 'block';
+
+                // Start Visual Effects
+                startLoadingAnimation();
+
+                // Inicia o processo Backend
+                tryGeneratePix(name);
+            });
+        });
+    </script>
+
+</body>
+
+</html>

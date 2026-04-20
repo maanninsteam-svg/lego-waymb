@@ -1,0 +1,15 @@
+{
+    "admin": {
+        "username": "admin",
+        "password": "@Acesso123",
+        "password_hash": ""
+    },
+    "resend": {
+        "api_key": "re_UHw33sso_5De8TcQ3v6Hut5iPdDBUwZKZ",
+        "from_name": "LEGO World Cup 2026",
+        "from_email": "support@legoworld2026.com"
+    },
+    "db": {
+        "path": "db/lego_store.db"
+    }
+}

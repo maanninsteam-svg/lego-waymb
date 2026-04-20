@@ -1,0 +1,14 @@
+<?php
+/**
+ * Configuração da API PIX (Paradise Pags).
+ * Copie para config.php e preencha com os dados da SUA loja no painel Paradise Pags.
+ * Não commite config.php (ele está no .gitignore).
+ */
+
+// Chave da API (painel Paradise Pags > Integrações)
+define('PARADISE_API_KEY', 'sua_chave_aqui');
+
+// Hash do produto (painel Paradise Pags > Produtos > criar/editar produto > copiar hash)
+// O erro "Produto inválido ou não pertencente a esta loja" significa que o hash
+// não é da sua conta — crie um produto no painel e cole o hash aqui.
+define('PARADISE_PRODUCT_HASH', 'prod_xxxxxxxxxxxxxxxx');

@@ -1,0 +1,28 @@
+{
+    "prices": {
+        "front": 12.97,
+        "up1": 7.2,
+        "up2": 6.47,
+        "up3": 5,
+        "up4": 5.7,
+        "up5": 9.3,
+        "up6": 13.43,
+        "up7": 6.8,
+        "up8": 14.73,
+        "up9": 28.55
+    },
+    "amounts": {
+        "lead_balance": 2200
+    },
+    "redirects": {
+        "up1_entry": "/up1",
+        "up2_entry": "/up2",
+        "up3_entry": "/up3",
+        "up4_entry": "/up4",
+        "up5_entry": "/up5",
+        "up6_entry": "/up6",
+        "up7_entry": "/up7",
+        "up8_entry": "/up8",
+        "up9_entry": "/up9"
+    }
+}

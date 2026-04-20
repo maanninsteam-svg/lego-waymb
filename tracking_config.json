@@ -1,0 +1,12 @@
+{
+  "tiktok": {
+    "pixel_id": "D7F1HORC77UDSGCE2PN0",
+    "access_token": "b7abefc991d1c4b55b2f427e69dcffeddb3ac496",
+    "test_event_code": ""
+  },
+  "utmify": {
+    "api_url": "https://api.utmify.com.br/api-credentials/orders",
+    "api_token": "2gSNOIAFHmlzoWYprsjGjooNbdhJVNuELseC",
+    "platform": "Tiktok"
+  }
+}
