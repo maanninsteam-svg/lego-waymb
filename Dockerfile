@@ -21,18 +21,17 @@ RUN echo '<Directory /var/www/html>\n\
 # Copiar ficheiros do projecto
 COPY . /var/www/html/
 
-# Entrypoint script para ajustar a porta dinamicamente (Railway)
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+# Criar script de arranque com LF garantido (Railway usa $PORT dinâmico)
+RUN printf '#!/bin/sh\nPORT=${PORT:-80}\nsed -i "s/Listen 80/Listen $PORT/g" /etc/apache2/ports.conf\nsed -i "s/<VirtualHost \\*:80>/<VirtualHost *:$PORT>/g" /etc/apache2/sites-enabled/000-default.conf\nexec apache2-foreground\n' > /start.sh \
+    && chmod +x /start.sh
 
 # Criar directórios de dados e definir permissões
 RUN mkdir -p /var/www/html/db /var/www/html/.utmify_pending \
     && chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type d -exec chmod 755 {} \; \
     && find /var/www/html -type f -exec chmod 644 {} \; \
-    && chmod 777 /var/www/html/db /var/www/html/.utmify_pending \
-    && chmod +x /docker-entrypoint.sh
+    && chmod 777 /var/www/html/db /var/www/html/.utmify_pending
 
 EXPOSE 80
 
-CMD ["/docker-entrypoint.sh"]
+CMD ["/start.sh"]
