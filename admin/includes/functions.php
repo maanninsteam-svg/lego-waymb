@@ -78,6 +78,7 @@ function send_tracking_email(
     $totalFormatted = number_format($amount, 2, ',', '.') . ' €';
     $nameSafe       = htmlspecialchars($toName, ENT_QUOTES, 'UTF-8');
     $codeSafe       = htmlspecialchars($trackingCode, ENT_QUOTES, 'UTF-8');
+    $trackingUrl    = 'https://t.17track.net/en?nums=' . urlencode($trackingCode);
 
     $html = <<<HTML
 <!DOCTYPE html>
@@ -109,7 +110,12 @@ function send_tracking_email(
                 <td style="background:#fef3c7;border:2px solid #f59e0b;border-radius:10px;padding:20px 24px;text-align:center;">
                   <p style="margin:0 0 8px;font-size:13px;color:#92400e;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Código de Rastreio</p>
                   <p style="margin:0;font-size:28px;font-weight:700;color:#1e293b;letter-spacing:3px;">{$codeSafe}</p>
-                  <p style="margin:10px 0 0;font-size:12px;color:#78716c;">Utilize este código no site dos CTT ou da transportadora para acompanhar a entrega.</p>
+                  <p style="margin:16px 0 0;">
+                    <a href="{$trackingUrl}" target="_blank"
+                       style="display:inline-block;background:#f59e0b;color:#1e293b;font-weight:700;font-size:14px;padding:12px 28px;border-radius:8px;text-decoration:none;letter-spacing:0.5px;">
+                      Rastrear Encomenda →
+                    </a>
+                  </p>
                 </td>
               </tr>
             </table>
